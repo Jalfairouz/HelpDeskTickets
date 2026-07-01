@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="HelpDeskTickets.Core/HelpDeskTickets.Core.csproj" Id="71e8585b-3635-47a3-94dc-0aab6909a500" />
+  <Project Path="HelpDeskTickets.EF/HelpDeskTickets.EF.csproj" Id="64e122b5-00c2-4bbf-bae8-988c3982e66d" />
   <Project Path="HelpDeskTickets/HelpDeskTickets.csproj" />
 </Solution>

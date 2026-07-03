@@ -1,8 +1,11 @@
 using HelpDeskTickets.Core;
 using HelpDeskTickets.Core.Interfaces;
-using HelpDeskTickets.EF;
+using HelpDeskTickets.EF.Data;
 using HelpDeskTickets.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using HelpDeskTickets.App.Services;
+using HelpDeskTickets.App.MappingProfiles;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,14 +18,18 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
     b=> b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
     ));
-builder.Services.AddTransient<IUnitOfWork,UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
+
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IDepartmentSrevice, DepartmentSrevice>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

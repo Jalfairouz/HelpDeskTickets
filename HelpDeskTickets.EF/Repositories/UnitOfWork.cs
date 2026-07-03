@@ -4,8 +4,8 @@ using System.Text;
 using HelpDeskTickets.Core;
 using HelpDeskTickets.Core.Interfaces;
 using HelpDeskTickets.Core.Models;
-using HelpDeskTickets.EF.Repositories;
-namespace HelpDeskTickets.EF
+using HelpDeskTickets.EF.Data;
+namespace HelpDeskTickets.EF.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -23,9 +23,10 @@ namespace HelpDeskTickets.EF
 
         }
 
-        public int Complete()
+        
+        public async Task<int> SaveChangesAsync()
         {
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
         public void Dispose()

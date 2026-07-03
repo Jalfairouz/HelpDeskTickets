@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using HelpDeskTickets.Core.Models;
-namespace HelpDeskTickets.EF
+namespace HelpDeskTickets.EF.Data
 {
     public  class AppDbContext : DbContext
     {

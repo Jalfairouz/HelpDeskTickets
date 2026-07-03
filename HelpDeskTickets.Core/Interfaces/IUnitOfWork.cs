@@ -12,7 +12,8 @@ namespace HelpDeskTickets.Core
         IBaseRepository<Comment> Comments { get; }
         IBaseRepository<Department> Departments { get; }
 
-        int Complete();
+        
+        Task<int> SaveChangesAsync();
 
     }
 }

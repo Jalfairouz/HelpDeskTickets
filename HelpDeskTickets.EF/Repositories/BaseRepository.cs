@@ -1,32 +1,52 @@
 ﻿using HelpDeskTickets.Core.Interfaces;
+using HelpDeskTickets.EF.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace HelpDeskTickets.EF.Repositories
 {
     public class BaseRepository<T> :IBaseRepository <T> where T : class
     {
-        protected AppDbContext _context;
+        private readonly AppDbContext _context;
+        private readonly DbSet<T> _dbSet;
         public BaseRepository(AppDbContext context)
         {
            _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public IEnumerable<T> GetAll()
+        public virtual async Task<T> GetByIdAsync(int id)
         {
-            return _context.Set<T>().ToList();
+            return await _dbSet.FindAsync(id);
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _context.Set<T>().FindAsync(id);
+            return await _dbSet.ToListAsync();
         }
-        public T Add(T entity)
+
+        public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            _context.Set<T>().Add(entity);
-            
-            return entity;
+            return await _dbSet.Where(predicate).ToListAsync();
         }
+
+        public virtual async Task AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+        }
+
+        public virtual void Update(T entity)
+        {
+            _dbSet.Update(entity);
+        }
+
+        public virtual void Delete(T entity)
+        {
+            _dbSet.Remove(entity);
+        }
+
     }
 }

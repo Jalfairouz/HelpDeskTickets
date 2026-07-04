@@ -23,6 +23,7 @@ namespace HelpDeskTickets.App.Services
         public async Task<CommentResponse> CreateCommentAsync(CreateCommentRequest request)
         {
             var comment = _mapper.Map<Comment>(request);
+
             comment.Date = DateTime.UtcNow;
 
             await _unitOfWork.Comments.AddAsync(comment);

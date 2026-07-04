@@ -4,7 +4,7 @@
     {
         public string Id { get; set; }
         public string Content { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime Date { get; set; }
         public int TicketId { get; set; }
     }
 }

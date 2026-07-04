@@ -23,8 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
     b=> b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
     ));
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
+builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 builder.Services.AddScoped<ITicketService, TicketService>();

@@ -1,11 +1,8 @@
-﻿using HelpDeskTickets.Core.Interfaces;
-using HelpDeskTickets.Core.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using HelpDeskTickets.App.Services;
-using HelpDeskTickets.DTOs.Responses;
-using HelpDeskTickets.DTOs.Requests;
+﻿using HelpDeskTickets.App.Services;
 using HelpDeskTickets.Core.DTOs.Requests;
+using HelpDeskTickets.DTOs.Requests;
+using HelpDeskTickets.DTOs.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 //In this controllor we will use Create, GetById, GetAll, Update, Delete, Change Ticket status.
 
@@ -49,7 +46,7 @@ namespace HelpDeskTickets.Controllers
             if (updatedTicket == null)
             {
                 return NotFound();
-            } 
+            }
             return Ok(updatedTicket);
         }
         [HttpDelete("{id}")]
@@ -62,9 +59,9 @@ namespace HelpDeskTickets.Controllers
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> ChangeTicketStatus(int id, [FromBody] ChangeStatusRequest request)
         {
-            await _ticketService.ChangeTicketStatusAsync(id, request.Status); // returns Task (void)
+            await _ticketService.ChangeTicketStatusAsync(id, request.Status); 
 
-            var updatedTicket = await _ticketService.GetTicketByIdAsync(id); // fetch updated ticket
+            var updatedTicket = await _ticketService.GetTicketByIdAsync(id); 
             if (updatedTicket == null) return NotFound();
             return Ok(updatedTicket);
         }

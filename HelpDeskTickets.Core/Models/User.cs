@@ -27,6 +27,7 @@ namespace HelpDeskTickets.Core.Models
         {
             return new User
             {
+                Id = Guid.NewGuid(),
                 Email = email.ToLowerInvariant(),
                 FirstName = firstName,
                 LastName = lastName,

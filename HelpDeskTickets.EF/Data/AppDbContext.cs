@@ -22,6 +22,9 @@ namespace HelpDeskTickets.EF.Data
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                
+                entity.Property(e => e.Id)
+            .HasDefaultValueSql("NEWID()");
 
                 entity.Property(e => e.Email)
                     .IsRequired()

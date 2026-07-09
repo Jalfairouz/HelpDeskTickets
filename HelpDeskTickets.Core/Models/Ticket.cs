@@ -5,6 +5,7 @@ using System.Text;
 namespace HelpDeskTickets.Core.Models
 {
     //I used enums to represent the status and priority of a ticket
+    //I used enums to represent the status and priority of a ticket
     public enum TicketStatus
     {
         Open,

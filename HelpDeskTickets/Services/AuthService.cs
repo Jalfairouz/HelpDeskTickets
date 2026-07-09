@@ -2,7 +2,6 @@
 using HelpDeskTickets.Core.DTOs.Responses;
 using HelpDeskTickets.Core.Interfaces;
 using HelpDeskTickets.Core.Models;
-using HelpDeskTickets.EF.Repositories;
 using HelpDeskTickets.Settings;
 
 namespace HelpDeskTickets.Services

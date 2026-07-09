@@ -25,7 +25,9 @@ namespace HelpDeskTickets.Controllers
         [HttpGet("ticket/{ticketId}")]
         public async Task<ActionResult<IEnumerable<CommentResponse>>> GetCommentsByTicketId(int ticketId)
         {
+
             var comments = await _commentService.GetCommentsByTicketIdAsync(ticketId);
+            if (comments == null) return BadRequest("Ticket not found.");
             return Ok(comments);
         }
 

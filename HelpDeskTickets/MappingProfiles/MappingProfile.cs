@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using AutoMapper;
-using HelpDeskTickets.Core;
 using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;

@@ -31,7 +31,10 @@ namespace HelpDeskTickets.App.Services
             return _mapper.Map<CommentResponse>(comment);
         }
         public async Task<IEnumerable<CommentResponse>> GetCommentsByTicketIdAsync(int ticketId)
-        {
+        {   
+            var checkTicket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
+            if (checkTicket == null) return null;
+
             var comments = await _unitOfWork.Comments.FindAsync(c => c.TicketId == ticketId);
             return _mapper.Map<IEnumerable<CommentResponse>>(comments);
         }

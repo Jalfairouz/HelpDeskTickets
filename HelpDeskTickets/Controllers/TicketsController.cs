@@ -21,16 +21,16 @@ namespace HelpDeskTickets.Controllers
         public async Task<ActionResult<TicketResponse>> CreateTicket([FromBody] CreateTicketRequest request)
         {
             var createdTicket = await _ticketService.CreateTicketAsync(request);
+            if (createdTicket == null) return BadRequest("Invalid department ID.");
+            
             return CreatedAtAction(nameof(GetTicketById), new { id = createdTicket.Id }, createdTicket);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<TicketResponse>> GetTicketById(int id)
         {
             var ticket = await _ticketService.GetTicketByIdAsync(id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
+            if (ticket == null) return BadRequest("Invalid Ticket ID.");
+
             return Ok(ticket);
         }
         [HttpGet]
@@ -43,16 +43,18 @@ namespace HelpDeskTickets.Controllers
         public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTicketRequest request)
         {
             var updatedTicket = await _ticketService.UpdateTicketAsync(id, request);
-            if (updatedTicket == null)
-            {
-                return NotFound();
-            }
+            if (updatedTicket == null) return BadRequest("Invalid Ticket ID.");
+
             return Ok(updatedTicket);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(int id)
         {
-            await _ticketService.DeleteTicketAsync(id);
+
+            var ticketdeleted = await _ticketService.DeleteTicketAsync(id);
+            if (!ticketdeleted) return BadRequest("Invalid Ticket ID.");
+            
+
             return NoContent();
 
         }
@@ -62,7 +64,7 @@ namespace HelpDeskTickets.Controllers
             await _ticketService.ChangeTicketStatusAsync(id, request.Status); 
 
             var updatedTicket = await _ticketService.GetTicketByIdAsync(id); 
-            if (updatedTicket == null) return NotFound();
+            if (updatedTicket == null) return BadRequest("Invalid Ticket ID.");
             return Ok(updatedTicket);
         }
     }

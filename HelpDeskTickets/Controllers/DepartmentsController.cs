@@ -27,6 +27,7 @@ namespace HelpDeskTickets.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DepartmentResponse>>> GetAllDepartments()
         {
+
             var departments = await _departmentService.GetAllDepartmentsAsync();
             return Ok(departments);
         }

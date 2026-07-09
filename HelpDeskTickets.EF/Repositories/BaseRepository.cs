@@ -22,11 +22,15 @@ namespace HelpDeskTickets.EF.Repositories
         {
             return await _dbSet.FindAsync(id);
         }
+        public IQueryable<T> GetQueryable()
+        {
+            return _dbSet.AsQueryable();
+        }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
-        }
+      }
 
         public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {

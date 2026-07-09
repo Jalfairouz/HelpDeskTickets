@@ -4,6 +4,7 @@ using HelpDeskTickets.Core.Interfaces;
 using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,8 +21,13 @@ namespace HelpDeskTickets.App.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<TicketResponse> CreateTicketAsync(CreateTicketRequest request)
+        public async Task<TicketResponse?> CreateTicketAsync(CreateTicketRequest request)
         {
+            var departmentCheck = await _unitOfWork.Departments.GetByIdAsync(request.DepartmentId);
+            if (departmentCheck == null)
+            {
+                return null;
+            }
             var ticket = _mapper.Map<Ticket>(request);
             ticket.CreatedAt = DateTime.UtcNow;
             ticket.Status = TicketStatus.Open;
@@ -29,29 +35,33 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<TicketResponse>(ticket);
         }
-        public async Task<TicketResponse> GetTicketByIdAsync(int id)
+        public async Task<TicketResponse?> GetTicketByIdAsync(int id)
         {
-            var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
-            if (ticket == null) throw new KeyNotFoundException($"Ticket with id {id} not found.");
+            var ticket = await _unitOfWork.Tickets.GetQueryable()
+                .Include(t => t.Department)
+                .Include(t => t.Comments)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (ticket == null) return null;
+
             return _mapper.Map<TicketResponse>(ticket);
         }
         public async Task<IEnumerable<TicketResponse>> GetAllTicketsAsync()
         {
-            var tickets = await _unitOfWork.Tickets.GetAllAsync();
+            var tickets = await _unitOfWork.Tickets.GetQueryable()                    
+                .Include(t => t.Department).ToListAsync();
             return _mapper.Map<IEnumerable<TicketResponse>>(tickets);
         }
-        public async Task<TicketResponse> UpdateTicketAsync(int id, UpdateTicketRequest request)
+        public async Task<TicketResponse?> UpdateTicketAsync(int id, UpdateTicketRequest request)
         {
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
-            if (ticket == null)
-            {
-                throw new Exception("Ticket not found");
-            }
+            if (ticket == null) return null;
+
             _mapper.Map(request, ticket);
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<TicketResponse>(ticket);
         }
-        public async Task<TicketResponse> ChangeTicketStatusAsync(int id, string status)
+        public async Task<TicketResponse?> ChangeTicketStatusAsync(int id, string status)
         {
             if (!Enum.TryParse<TicketStatus>(status, true, out var ticketStatus))
             {
@@ -59,10 +69,7 @@ namespace HelpDeskTickets.App.Services
             }
 
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
-            if (ticket == null)
-            {
-                throw new Exception("Ticket not found");
-            }
+            if (ticket == null) return null;
 
             ticket.Status = ticketStatus;
             _unitOfWork.Tickets.Update(ticket);
@@ -70,16 +77,16 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<TicketResponse>(ticket);
         }
-        public async Task DeleteTicketAsync(int id)
+        public async Task<bool> DeleteTicketAsync(int id)
         {
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
             if (ticket == null)
             {
-                throw new Exception("Ticket not found");
+                return false;
             }
             _unitOfWork.Tickets.Delete(ticket);
             await _unitOfWork.SaveChangesAsync();
-
+            return true;
         }
 
     }

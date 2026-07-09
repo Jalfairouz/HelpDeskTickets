@@ -10,11 +10,11 @@ namespace HelpDeskTickets.App.Services
     public interface ITicketService
     {
         Task<TicketResponse> CreateTicketAsync(CreateTicketRequest request);
-        Task<TicketResponse> GetTicketByIdAsync(int id);
+        Task<TicketResponse?> GetTicketByIdAsync(int id);
         Task<IEnumerable<TicketResponse>> GetAllTicketsAsync();
-        Task<TicketResponse> UpdateTicketAsync(int id, UpdateTicketRequest request);
-        Task <TicketResponse>ChangeTicketStatusAsync(int id, string status);
-        Task DeleteTicketAsync(int id);
+        Task<TicketResponse?> UpdateTicketAsync(int id, UpdateTicketRequest request);
+        Task <TicketResponse?>ChangeTicketStatusAsync(int id, string status);
+        Task<bool> DeleteTicketAsync(int id);
         
     }
 }

@@ -1,34 +1,72 @@
 ﻿using HelpDeskTickets.App.Services;
+using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 //Here we will create comment to ticket and Get Ticket Comments Controller
 namespace HelpDeskTickets.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CommentsController : ControllerBase
     {
         private readonly ICommentService _commentService;
-        public CommentsController(ICommentService commentService)
+        private readonly UserManager<User> _userManager;
+
+        public CommentsController(ICommentService commentService,  UserManager<User> userManager)
         {
             _commentService = commentService;
+            _userManager = userManager;
         }
         [HttpPost]
-        public async Task<ActionResult<CommentResponse>> CreateComment([FromBody] CreateCommentRequest request)
+        public async Task<ActionResult<CommentResponse>> CreateComment(
+            [FromBody] CreateCommentRequest request)
         {
-            var createdComment = await _commentService.CreateCommentAsync(request);
-            return CreatedAtAction(nameof(GetCommentsByTicketId), new { ticketId = createdComment.TicketId }, createdComment);
-        }
-        [HttpGet("ticket/{ticketId}")]
-        public async Task<ActionResult<IEnumerable<CommentResponse>>> GetCommentsByTicketId(int ticketId)
-        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                var user = await _userManager.FindByIdAsync(userId);
 
-            var comments = await _commentService.GetCommentsByTicketIdAsync(ticketId);
-            if (comments == null) return BadRequest("Ticket not found.");
-            return Ok(comments);
+                var result = await _commentService.CreateCommentAsync(request, userId, userRole, user?.DepartmentId);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpGet("ticket/{ticketId}")]
+        public async Task<ActionResult<IEnumerable<CommentResponse>>> GetCommentsByTicket(int ticketId)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                var user = await _userManager.FindByIdAsync(userId);
+
+                var result = await _commentService.GetCommentsByTicketAsync(ticketId, userId, userRole, user?.DepartmentId);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
     }

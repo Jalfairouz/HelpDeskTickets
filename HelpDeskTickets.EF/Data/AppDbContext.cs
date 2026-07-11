@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HelpDeskTickets.Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using HelpDeskTickets.Core.Models;
 namespace HelpDeskTickets.EF.Data
 {
-    public  class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -18,58 +19,99 @@ namespace HelpDeskTickets.EF.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // User entity configuration
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.Id);
-                
-                entity.Property(e => e.Id)
-            .HasDefaultValueSql("NEWID()");
-
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(256);
-
                 entity.Property(e => e.FirstName)
-                    .IsRequired()
                     .HasMaxLength(100);
 
                 entity.Property(e => e.LastName)
-                    .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.PasswordHash)
-                    .IsRequired();
-
-                entity.Property(e => e.Role)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasIndex(e => e.Email)
-                    .IsUnique();
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETUTCDATE()");
 
                 entity.HasOne(e => e.Department)
                     .WithMany()
                     .HasForeignKey(e => e.DepartmentId)
                     .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasIndex(e => e.Email).IsUnique();
             });
+
+
 
             modelBuilder.Entity<Ticket>(entity =>
             {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Description)
+                    .IsRequired();
+
+                entity.Property(e => e.Status)
+                    .IsRequired();
+                      
+
+                entity.Property(e => e.Priority)
+                    .IsRequired();  
+
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("GETUTCDATE()");
+
+                
                 entity.HasOne(e => e.Department)
-                    .WithMany()
+                    .WithMany(d => d.Tickets)
                     .HasForeignKey(e => e.DepartmentId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                
+                entity.HasOne(e => e.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);  
+
+                entity.HasMany(e => e.Comments)
+                    .WithOne(c => c.Ticket)
+                    .HasForeignKey(c => c.TicketId)
+                    .OnDelete(DeleteBehavior.Cascade);  
             });
 
+            
+            modelBuilder.Entity<Department>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique();
+            });
+
+            
             modelBuilder.Entity<Comment>(entity =>
             {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Content)
+                    .IsRequired();
+
+                entity.Property(e => e.Date)
+                    .IsRequired()
+                    .HasDefaultValueSql("GETUTCDATE()");
+
                 entity.HasOne(e => e.Ticket)
-                    .WithMany()
+                    .WithMany(t => t.Comments)
                     .HasForeignKey(e => e.TicketId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
+
 
     }
 }

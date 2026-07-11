@@ -11,4 +11,3 @@ namespace HelpDeskTickets.Core.Models
         public ICollection<Ticket> Tickets { get; set; }= new List<Ticket>();
     }
 }
-//relation between Department and Ticket is one-to-many, where one Department can have many Tickets

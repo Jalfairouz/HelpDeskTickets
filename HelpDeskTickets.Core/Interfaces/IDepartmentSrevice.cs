@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace HelpDeskTickets.App.Services
 {
     public interface IDepartmentSrevice
     {
-        Task<DepartmentResponse> CreateDepartmentAsync(CreateDepartmentRequest request);
+        Task<DepartmentResponse> CreateDepartmentAsync(CreateDepartmentRequest request, string userRole);
         Task<IEnumerable<DepartmentResponse>> GetAllDepartmentsAsync();
 
     }

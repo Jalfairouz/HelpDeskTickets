@@ -1,14 +1,18 @@
-﻿using HelpDeskTickets.DTOs.Responses;
+﻿using HelpDeskTickets.App.Services;
+using HelpDeskTickets.DTOs.Requests;
+using HelpDeskTickets.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using HelpDeskTickets.DTOs.Requests;
-using HelpDeskTickets.App.Services;
+using System.Security.Claims;
+
 //Here we will use Create and Get Department Controller.
 
 namespace HelpDeskTickets.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DepartmentsController : ControllerBase
     {
         private readonly IDepartmentSrevice _departmentService;
@@ -19,11 +23,26 @@ namespace HelpDeskTickets.Controllers
            
         }
         [HttpPost]
-        public async Task<ActionResult<DepartmentResponse>> CreateDepartmentAsync([FromBody] CreateDepartmentRequest request)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<DepartmentResponse>> CreateDepartment(
+            [FromBody] CreateDepartmentRequest request)
         {
-            var createdDepartment = await _departmentService.CreateDepartmentAsync(request);
-            return Ok(createdDepartment);
+            try
+            {
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                var result = await _departmentService.CreateDepartmentAsync(request, userRole);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DepartmentResponse>>> GetAllDepartments()
         {

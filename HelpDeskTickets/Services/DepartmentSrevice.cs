@@ -23,20 +23,26 @@ namespace HelpDeskTickets.App.Services
             _mapper = mapper;
         }
 
-        public async Task<DepartmentResponse> CreateDepartmentAsync(CreateDepartmentRequest request)
+        public async Task<DepartmentResponse> CreateDepartmentAsync(
+            CreateDepartmentRequest request,
+            string userRole)
         {
-            var department = _mapper.Map<Department>(request);
+            if (userRole != "Admin")
+                throw new UnauthorizedAccessException("Only Admin can create departments");
 
+            var department = _mapper.Map<Department>(request);
             await _unitOfWork.Departments.AddAsync(department);
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<DepartmentResponse>(department);
         }
+
         public async Task<IEnumerable<DepartmentResponse>> GetAllDepartmentsAsync()
         {
             var departments = await _unitOfWork.Departments.GetAllAsync();
             return _mapper.Map<IEnumerable<DepartmentResponse>>(departments);
         }
+
         
     }
 }

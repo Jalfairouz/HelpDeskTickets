@@ -14,7 +14,9 @@ namespace HelpDeskTickets.Core.Models
         //and TicketId is a foreign key in Comment
         public int TicketId { get; set; }
         public Ticket Ticket { get; set; } = null!;
-        
+        public string CreatedByUserId { get; set; } = string.Empty;
+        public User CreatedByUser { get; set; } = null!;
+
 
     }
 }

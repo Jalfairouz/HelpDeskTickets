@@ -8,7 +8,8 @@ namespace HelpDeskTickets.App.Services
 {
     public interface ICommentService
     {
-        Task<CommentResponse> CreateCommentAsync(CreateCommentRequest request);
-        Task<IEnumerable<CommentResponse>> GetCommentsByTicketIdAsync(int ticketId);
+        Task<CommentResponse> CreateCommentAsync(CreateCommentRequest request, string userId, string userRole, int? userDepartmentId);
+        Task<IEnumerable<CommentResponse>> GetCommentsByTicketAsync(int ticketId, string userId, string userRole, int? userDepartmentId);
+
     }
 }

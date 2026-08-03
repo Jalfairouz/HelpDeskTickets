@@ -45,6 +45,7 @@ namespace HelpDeskTickets.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+
             try
             {
                 var result = await _authService.AuthenticateAsync(request.Email, request.Password);

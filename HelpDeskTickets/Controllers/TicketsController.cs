@@ -88,6 +88,7 @@ namespace HelpDeskTickets.Controllers
         [Authorize(Roles = "Manager,Admin")]
         public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTicketRequest request)
         {
+
             try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

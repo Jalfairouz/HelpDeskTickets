@@ -23,9 +23,11 @@ var jwtSettings = builder.Configuration
     ?? throw new InvalidOperationException("JwtSettings configuration not found");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        //b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
+        
+        ));
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {

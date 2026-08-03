@@ -27,8 +27,8 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.LastName)
                     .HasMaxLength(100);
 
-                entity.Property(e => e.CreatedAt)
-                    .HasDefaultValueSql("GETUTCDATE()");
+                //entity.Property(e => e.CreatedAt)
+                //    .HasDefaultValueSql("GETUTCDATE()");
 
                 entity.HasOne(e => e.Department)
                     .WithMany()
@@ -58,9 +58,9 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.Priority)
                     .IsRequired();  
 
-                entity.Property(e => e.CreatedAt)
-                    .IsRequired()
-                    .HasDefaultValueSql("GETUTCDATE()");
+                //entity.Property(e => e.CreatedAt)
+                //    .IsRequired()
+                //    .HasDefaultValueSql("GETUTCDATE()");
 
                 
                 entity.HasOne(e => e.Department)
@@ -101,9 +101,9 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.Content)
                     .IsRequired();
 
-                entity.Property(e => e.Date)
-                    .IsRequired()
-                    .HasDefaultValueSql("GETUTCDATE()");
+                //entity.Property(e => e.Date)
+                //    .IsRequired()
+                //    .HasDefaultValueSql("GETUTCDATE()");
 
                 entity.HasOne(e => e.Ticket)
                     .WithMany(t => t.Comments)

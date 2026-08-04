@@ -31,8 +31,8 @@ namespace HelpDeskTickets.Controllers
                     request.Email,
                     request.FirstName,
                     request.LastName,
-                    request.Password,
-                    request.Role);
+                    request.Password
+                    );
 
                 return CreatedAtAction(nameof(GetProfile), result);
             }
@@ -83,6 +83,7 @@ namespace HelpDeskTickets.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Role = role
+
                 };
 
                 return Ok(profile);

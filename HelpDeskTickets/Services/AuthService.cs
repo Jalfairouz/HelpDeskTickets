@@ -86,15 +86,7 @@ namespace HelpDeskTickets.Services
             return new AuthResponse
             {
                 Token = token,
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Role = userRole,
-                    DepartmentId = user.DepartmentId
-                },
+                
                 ExpiresIn = _jwtSettings.ExpirationMinutes * 60
             };
         }

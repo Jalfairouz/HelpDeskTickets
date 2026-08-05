@@ -74,7 +74,7 @@ namespace HelpDeskTickets.Controllers
                     return NotFound();
 
                 var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault() ?? "Customer";
+                var role = roles.FirstOrDefault() ?? "User";
 
                 var profile = new UserProfileDto
                 {

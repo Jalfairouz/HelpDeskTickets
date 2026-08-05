@@ -38,7 +38,7 @@ namespace HelpDeskTickets.Services
                 expires: DateTime.UtcNow.AddMinutes(_settings.ExpirationMinutes),
                 signingCredentials: signingCredentials
             );
-
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

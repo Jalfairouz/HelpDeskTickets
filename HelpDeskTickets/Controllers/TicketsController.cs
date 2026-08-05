@@ -41,7 +41,7 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "ITManager,Admin")]
         public async Task<IActionResult> GetAllTickets()
         {
             try
@@ -85,7 +85,7 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "ITManager,Admin")]
         public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTicketRequest request)
         {
 
@@ -136,7 +136,7 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpPatch("{id}/status")]
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "ITManager,Admin")]
         public async Task<IActionResult> ChangeStatus(int id, [FromBody] ChangeStatusRequest request)
         {
             try

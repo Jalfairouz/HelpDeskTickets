@@ -90,8 +90,9 @@ using (var scope = app.Services.CreateScope())
     string[] roles =
     {
         "Admin",
-        "Manager",
-        "Customer"
+        "ITManager",
+        "Technician",
+        "User"
     };
 
     foreach (var role in roles)

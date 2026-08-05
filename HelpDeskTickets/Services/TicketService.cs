@@ -46,6 +46,7 @@ namespace HelpDeskTickets.App.Services
             var ticket = await _unitOfWork.Tickets.GetQueryable()
                 .Include(t => t.Department)
                 .Include(t => t.Comments)
+                .ThenInclude(c=> c.CreatedByUser)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (ticket == null)
@@ -164,7 +165,7 @@ namespace HelpDeskTickets.App.Services
             else if (action == "update")
             {
                 throw new UnauthorizedAccessException(
-                    "Customers cannot modify tickets");
+                    "Users cannot modify tickets");
             }
 
         }

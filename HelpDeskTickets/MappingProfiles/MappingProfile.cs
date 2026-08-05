@@ -26,7 +26,9 @@ namespace HelpDeskTickets.App.MappingProfiles
             CreateMap<Department, DepartmentResponse>();
             CreateMap<CreateCommentRequest, Comment>()
     .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.UtcNow));
-            CreateMap<Comment, CommentResponse>();
+            CreateMap<Comment, CommentResponse>()
+                .ForMember(dest => dest.CreatedByUserName,
+               opt => opt.MapFrom(src => src.CreatedByUser != null ? src.CreatedByUser.FirstName : null));
 
         }
     }

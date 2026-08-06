@@ -75,7 +75,7 @@ namespace HelpDeskTickets.App.Services
 
             if (userRole == "Manager")
             {
-                if (ticket.DepartmentId != userDepartmentId)
+                if (ticket.CreatedByUser.DepartmentId != userDepartmentId)
                     throw new UnauthorizedAccessException(
                         $"You can only {action} comments on tickets from your department");
                 return;

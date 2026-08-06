@@ -2,6 +2,8 @@
 using HelpDeskTickets.Core.Models;
 
 namespace HelpDeskTickets.Core.Models
+
+
 {
     public class User : IdentityUser
     {

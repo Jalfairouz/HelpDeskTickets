@@ -12,8 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
-using System.Security.Cryptography.Xml;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,27 +56,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-    //    (option => { option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
-    //{
-    //    Name = "Authorization",
-    //    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsIn",
-    //    In = ParameterLocation.Header,
-    //    Type = SecuritySchemeType.ApiKey,
-    //    Scheme = "Bearer"
-    //});
-    //    option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    //    {
-    //        new OpenApiSecurityRequirement
-    //        {
-    //            Reference = new OpenApiReference
-    //            {
-    //                Type = ReferenceType.SecurityScheme,
-    //                Id = JwtBearerDefaults.AuthenticationScheme
-    //            },
-    //        }, new string[] { }
-    //    });
-    //});
-
 var secretKeyBytes = System.Text.Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
 var securityKey = new SymmetricSecurityKey(secretKeyBytes);
 
@@ -112,8 +90,9 @@ using (var scope = app.Services.CreateScope())
     string[] roles =
     {
         "Admin",
-        "Manager",
-        "Customer"
+        "ITManager",
+        "Technician",
+        "User"
     };
 
     foreach (var role in roles)
@@ -135,7 +114,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapGet("/secure-data", ()=>"Secert Token Data").RequireAuthorization();
 app.MapControllers();
 
 app.Run();

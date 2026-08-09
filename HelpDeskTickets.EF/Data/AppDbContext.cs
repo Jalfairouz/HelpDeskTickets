@@ -15,6 +15,7 @@ namespace HelpDeskTickets.EF.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<User> Feedback { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -27,8 +28,7 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.LastName)
                     .HasMaxLength(100);
 
-                //entity.Property(e => e.CreatedAt)
-                //    .HasDefaultValueSql("GETUTCDATE()");
+                
 
                 entity.HasOne(e => e.Department)
                     .WithMany()
@@ -51,28 +51,36 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.Description)
                     .IsRequired();
 
+                entity.Property(e => e.Type)
+                    .IsRequired();
+
+                entity.Property(e => e.Category)
+                    .IsRequired();
+
                 entity.Property(e => e.Status)
                     .IsRequired();
                       
 
                 entity.Property(e => e.Priority)
-                    .IsRequired();  
+                    .IsRequired();
 
-                //entity.Property(e => e.CreatedAt)
-                //    .IsRequired()
-                //    .HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired();
 
-                
-                entity.HasOne(e => e.Department)
-                    .WithMany(d => d.Tickets)
-                    .HasForeignKey(e => e.DepartmentId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                
                 entity.HasOne(e => e.CreatedByUser)
                     .WithMany()
                     .HasForeignKey(e => e.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.Restrict);  
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.AssignedToUser)
+                    .WithMany()
+                    .HasForeignKey(e => e.AssignedToUserId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasOne(e => e.Feedback)
+                    .WithOne(f => f.Ticket)
+                    .HasForeignKey<Feedback>(f => f.TicketId)
+                    .OnDelete(DeleteBehavior.Cascade);  
 
                 entity.HasMany(e => e.Comments)
                     .WithOne(c => c.Ticket)
@@ -101,9 +109,7 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.Content)
                     .IsRequired();
 
-                //entity.Property(e => e.Date)
-                //    .IsRequired()
-                //    .HasDefaultValueSql("GETUTCDATE()");
+                
 
                 entity.HasOne(e => e.Ticket)
                     .WithMany(t => t.Comments)

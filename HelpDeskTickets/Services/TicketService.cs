@@ -4,6 +4,7 @@ using HelpDeskTickets.Core.Interfaces;
 using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.Tickets.AddAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
 
+
             return _mapper.Map<TicketResponse>(ticket);
         }
         public async Task<TicketResponse?> GetTicketByIdAsync(
@@ -44,8 +46,9 @@ namespace HelpDeskTickets.App.Services
            int? userDepartmentId)
         {
             var ticket = await _unitOfWork.Tickets.GetQueryable()
-                .Include(t => t.Department)
+                .Include(t => t.CreatedByUser.Department)
                 .Include(t => t.Comments)
+                .ThenInclude(c=> c.CreatedByUser)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (ticket == null)
@@ -61,17 +64,17 @@ namespace HelpDeskTickets.App.Services
             int? userDepartmentId)
         {
             IQueryable<Ticket> query = _unitOfWork.Tickets.GetQueryable()
-                .Include(t => t.Department);
+                .Include(t => t.CreatedByUser.Department);
 
             if (userRole == "Admin")
             {
             }
-            else if (userRole == "Manager")
+            else if (userRole == "ITManager")
             {
                 if (userDepartmentId == null)
                     throw new UnauthorizedAccessException("Manager must be assigned to a department");
 
-                query = query.Where(t => t.DepartmentId == userDepartmentId);
+                query = query.Where(t => t.CreatedByUser.DepartmentId == userDepartmentId);
             }
             else
             {
@@ -136,7 +139,17 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> AutoAssignTicketAsync(int ticketId)
+        {
+            var technician= await _unitOfWork.Tickets.GetByIdAsync(ticketId);
 
+            return true;
+        }
+       //public async Task<TicketResponse?> AssignTicketToTechnicianAsync(int ticketId, string technicianId, string ManagerId)
+       // {
+
+       //     return Ok();
+       // }
         private void ValidateTicketAccess(
             Ticket ticket,
             string userId,
@@ -149,7 +162,7 @@ namespace HelpDeskTickets.App.Services
 
             if (userRole == "Manager")
             {
-                if (ticket.DepartmentId != userDepartmentId)
+                if (ticket.CreatedByUser.DepartmentId != userDepartmentId)
                     throw new UnauthorizedAccessException(
                         $"You can only {action} tickets from your department");
                 return;
@@ -164,9 +177,10 @@ namespace HelpDeskTickets.App.Services
             else if (action == "update")
             {
                 throw new UnauthorizedAccessException(
-                    "Customers cannot modify tickets");
+                    "Users cannot modify tickets");
             }
 
         }
+        
     }
 }

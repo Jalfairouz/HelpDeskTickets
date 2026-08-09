@@ -28,7 +28,7 @@ namespace HelpDeskTickets.Services
             string firstName,
             string lastName,
             string password,
-            string role = "Customer")
+            string role = "User")
         {
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException("Email is required");
@@ -36,7 +36,7 @@ namespace HelpDeskTickets.Services
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
                 throw new ArgumentException("Password must be at least 6 characters");
 
-            var validRoles = new[] { "Admin", "Manager", "Customer" };
+            var validRoles = new[] { "Admin", "ITManager","Technician", "User" };
             if (!validRoles.Contains(role))
                 throw new ArgumentException($"Invalid role: {role}");
 
@@ -79,22 +79,14 @@ namespace HelpDeskTickets.Services
                 throw new UnauthorizedAccessException("Invalid email or password");
 
             var roles = await _userManager.GetRolesAsync(user);
-            var userRole = roles.FirstOrDefault() ?? "Customer";
+            var userRole = roles.FirstOrDefault() ?? "User";
 
             var token = _jwtTokenGenerator.GenerateToken(user, userRole);
 
             return new AuthResponse
             {
                 Token = token,
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Role = userRole,
-                    DepartmentId = user.DepartmentId
-                },
+                
                 ExpiresIn = _jwtSettings.ExpirationMinutes * 60
             };
         }

@@ -31,8 +31,8 @@ namespace HelpDeskTickets.Controllers
                     request.Email,
                     request.FirstName,
                     request.LastName,
-                    request.Password,
-                    request.Role);
+                    request.Password
+                    );
 
                 return CreatedAtAction(nameof(GetProfile), result);
             }
@@ -74,7 +74,7 @@ namespace HelpDeskTickets.Controllers
                     return NotFound();
 
                 var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault() ?? "Customer";
+                var role = roles.FirstOrDefault() ?? "User";
 
                 var profile = new UserProfileDto
                 {
@@ -83,6 +83,7 @@ namespace HelpDeskTickets.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Role = role
+
                 };
 
                 return Ok(profile);

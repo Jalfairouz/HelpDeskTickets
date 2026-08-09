@@ -85,6 +85,21 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+
+}
+using (var scope = app.Services.CreateScope())
+{
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     string[] roles =
@@ -114,7 +129,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapGet("/secure-data", ()=>"Secert Token Data").RequireAuthorization();
+
 app.MapControllers();
 
 app.Run();

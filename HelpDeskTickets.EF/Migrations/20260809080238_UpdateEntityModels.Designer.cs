@@ -3,6 +3,7 @@ using System;
 using HelpDeskTickets.EF.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HelpDeskTickets.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260809080238_UpdateEntityModels")]
+    partial class UpdateEntityModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,9 +182,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CurrentTicketsCount")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("integer");
 
@@ -196,12 +196,6 @@ namespace HelpDeskTickets.EF.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsAvailable")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -431,12 +425,12 @@ namespace HelpDeskTickets.EF.Migrations
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
                 {
                     b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany("AssignedTickets")
+                        .WithMany()
                         .HasForeignKey("AssignedToUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
-                        .WithMany("UserTickets")
+                        .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -521,13 +515,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Feedback");
-                });
-
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
-                {
-                    b.Navigation("AssignedTickets");
-
-                    b.Navigation("UserTickets");
                 });
 #pragma warning restore 612, 618
         }

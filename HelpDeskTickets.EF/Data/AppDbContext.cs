@@ -16,6 +16,7 @@ namespace HelpDeskTickets.EF.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<User> Feedback { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,12 +29,11 @@ namespace HelpDeskTickets.EF.Data
                 entity.Property(e => e.LastName)
                     .HasMaxLength(100);
 
-                
-
                 entity.HasOne(e => e.Department)
                     .WithMany()
                     .HasForeignKey(e => e.DepartmentId)
                     .OnDelete(DeleteBehavior.SetNull);
+
 
                 entity.HasIndex(e => e.Email).IsUnique();
             });
@@ -68,12 +68,12 @@ namespace HelpDeskTickets.EF.Data
                     .IsRequired();
 
                 entity.HasOne(e => e.CreatedByUser)
-                    .WithMany()
+                    .WithMany(u => u.UserTickets)
                     .HasForeignKey(e => e.CreatedByUserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(e => e.AssignedToUser)
-                    .WithMany()
+                    .WithMany(u => u.AssignedTickets)
                     .HasForeignKey(e => e.AssignedToUserId)
                     .OnDelete(DeleteBehavior.SetNull);
 

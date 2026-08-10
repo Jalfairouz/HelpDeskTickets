@@ -14,6 +14,7 @@ namespace HelpDeskTickets.EF.Repositories
         public IBaseRepository<Comment> Comments { get; private set; }
         public IBaseRepository<Department> Departments { get; private set; }
         public IBaseRepository<Feedback> Feedbacks { get;  set; }
+        public IBaseRepository<History> Historys { get; set; }
 
 
 
@@ -24,7 +25,7 @@ namespace HelpDeskTickets.EF.Repositories
             Comments = new BaseRepository<Comment>(_context);
             Departments = new BaseRepository<Department>(_context);
             Feedbacks = new BaseRepository<Feedback>(_context);
-
+            Historys = new BaseRepository<History>(_context);
         }
 
 

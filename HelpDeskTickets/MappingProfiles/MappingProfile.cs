@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
+using HelpDeskTickets.Core.DTOs.Responses;
 using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace HelpDeskTickets.App.MappingProfiles
 {
@@ -30,7 +31,9 @@ namespace HelpDeskTickets.App.MappingProfiles
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.CreatedByUserName,
                opt => opt.MapFrom(src => src.CreatedByUser != null ? src.CreatedByUser.FirstName : null));
-
+            CreateMap<User, UserProfileDto>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
+                
         }
     }
 }

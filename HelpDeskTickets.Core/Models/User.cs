@@ -15,6 +15,7 @@ namespace HelpDeskTickets.Core.Models
         public bool? IsAvailable { get; set; }
         public int CurrentTicketsCount { get; set; } = 0;
 
+
         public ICollection<Ticket> UserTickets { get; set; } = new List<Ticket>();
         public ICollection<Ticket> AssignedTickets { get; set; } = new List<Ticket>();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -461,131 +461,132 @@ namespace HelpDeskTickets.EF.Migrations
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
                 {
                     b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany("AssignedTickets")
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("AssignedTickets");
 
-                    b.HasOne("HelpDeskTickets.Core.Models.Ticket", "Ticket")
-                        .WithMany("Historys")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
+                        {
+                            b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
+                                .WithMany()
+                                .HasForeignKey("CreatedByUserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.Navigation("CreatedByUser");
+                            b.HasOne("HelpDeskTickets.Core.Models.Ticket", "Ticket")
+                                .WithMany("Historys")
+                                .HasForeignKey("TicketId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.Navigation("Ticket");
-                });
+                            b.Navigation("CreatedByUser");
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedToUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                            b.Navigation("Ticket");
+                        });
 
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
-                        .WithMany("UserTickets")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
+                        {
+                            b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
+                                .WithMany()
+                                .HasForeignKey("AssignedToUserId")
+                                .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("HelpDeskTickets.Core.Models.Department", null)
-                        .WithMany("Tickets")
-                        .HasForeignKey("DepartmentId");
+                            b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
+                                .WithMany("UserTickets")
+                                .HasForeignKey("CreatedByUserId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
 
-                    b.Navigation("AssignedToUser");
+                            b.HasOne("HelpDeskTickets.Core.Models.Department", null)
+                                .WithMany("Tickets")
+                                .HasForeignKey("DepartmentId");
 
-                    b.Navigation("CreatedByUser");
-                });
+                            b.Navigation("AssignedToUser");
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                            b.Navigation("CreatedByUser");
+                        });
 
-                    b.Navigation("Department");
-                });
+                    modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
+                        {
+                            b.HasOne("HelpDeskTickets.Core.Models.Department", "Department")
+                                .WithMany()
+                                .HasForeignKey("DepartmentId")
+                                .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.Navigation("Department");
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                        {
+                            b.HasOne("HelpDeskTickets.Core.Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                        {
+                            b.HasOne("HelpDeskTickets.Core.Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-                    b.HasOne("HelpDeskTickets.Core.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.HasOne("HelpDeskTickets.Core.Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.Department", b =>
-                {
-                    b.Navigation("Tickets");
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                        {
+                            b.HasOne("HelpDeskTickets.Core.Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
-                {
-                    b.Navigation("Comments");
+                    modelBuilder.Entity("HelpDeskTickets.Core.Models.Department", b =>
+                        {
+                            b.Navigation("Tickets");
+                        });
 
-                    b.Navigation("Feedback");
-                });
+                    modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
+                        {
+                            b.Navigation("Comments");
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
-                {
-                    b.Navigation("AssignedTickets");
+                            b.Navigation("Feedback");
+                        });
 
-                    b.Navigation("UserTickets");
+                    modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
+                        {
+                            b.Navigation("AssignedTickets");
 
-                    b.Navigation("Historys");
-                });
+                            b.Navigation("UserTickets");
+
+                            b.Navigation("Historys");
+                        });
 #pragma warning restore 612, 618
+                });
         }
     }
 }

@@ -119,19 +119,16 @@ namespace HelpDeskTickets.Controllers
             {
 
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                
                 var user = await _userManager.FindByIdAsync(userId);
 
-                var result = await _ticketService.AssignTicketToTechnicianAsync(ticketId, request.TechnicianId, userId, userRole);
+                var result = await _ticketService.AssignTicketToTechnicianAsync(ticketId, request.TechnicianId, userId);
                 if (result == null)
                     return NotFound();
 
                 return Ok(result);
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Forbid();
-            }
+            
             catch (Exception ex)
             {
                 return BadRequest(new { error = ex.Message });

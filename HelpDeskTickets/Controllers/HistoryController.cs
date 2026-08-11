@@ -25,24 +25,16 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ITManager,Admin")]
+        [Authorize(Roles = "ITManager")]
         public async Task<IActionResult> GetTicketHistory(int ticketId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if (currentUser == null)
-            {
-                return Unauthorized();
-            }
-
-            
             var roles = await _userManager.GetRolesAsync(currentUser);
             var userRole = roles.FirstOrDefault() ?? string.Empty;
             int? departmentId = currentUser.DepartmentId; 
             var History = await _HistoryService.GetHistoryByTicketAsync(
-                ticketId,
-                currentUser.Id,
-                userRole,
-                departmentId
+                ticketId
+               
             );
 
             return Ok(History);

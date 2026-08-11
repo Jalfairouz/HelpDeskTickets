@@ -11,6 +11,8 @@ namespace HelpDeskTickets.Core
         IBaseRepository<Ticket> Tickets { get; }
         IBaseRepository<Comment> Comments { get; }
         IBaseRepository<Department> Departments { get; }
+        IBaseRepository<Feedback> Feedbacks { get; }
+        IBaseRepository<History> Historys { get; }
 
         
         Task<int> SaveChangesAsync();

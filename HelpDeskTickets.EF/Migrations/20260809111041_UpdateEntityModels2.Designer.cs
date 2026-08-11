@@ -3,6 +3,7 @@ using System;
 using HelpDeskTickets.EF.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HelpDeskTickets.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260809111041_UpdateEntityModels2")]
+    partial class UpdateEntityModels2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,36 +106,6 @@ namespace HelpDeskTickets.EF.Migrations
                         .IsUnique();
 
                     b.ToTable("Feedback");
-                });
-
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("action")
-                        .HasColumnType("integer");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("History");
                 });
 
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
@@ -462,35 +435,11 @@ namespace HelpDeskTickets.EF.Migrations
                 {
                     b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
                         .WithMany("AssignedTickets")
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HelpDeskTickets.Core.Models.Ticket", "Ticket")
-                        .WithMany("Historys")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany()
                         .HasForeignKey("AssignedToUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
                         .WithMany("UserTickets")
-                        .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -582,8 +531,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Navigation("AssignedTickets");
 
                     b.Navigation("UserTickets");
-
-                    b.Navigation("Historys");
                 });
 #pragma warning restore 612, 618
         }

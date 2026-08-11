@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
+using HelpDeskTickets.Core.DTOs.Responses;
 using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace HelpDeskTickets.App.MappingProfiles
 {
@@ -18,9 +19,10 @@ namespace HelpDeskTickets.App.MappingProfiles
             CreateMap<UpdateTicketRequest, Ticket>()
     .ForMember(dest => dest.Status,
                opt => opt.MapFrom(src => Enum.Parse<TicketStatus>(src.Status, true)));
-            
+
             CreateMap<Ticket, TicketResponse>()
-    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+    .ForMember(dest => dest.AssignedToUserName, opt => opt.MapFrom(src => src.AssignedToUser));
 
             CreateMap<CreateDepartmentRequest, Department>();
             CreateMap<Department, DepartmentResponse>();
@@ -29,7 +31,9 @@ namespace HelpDeskTickets.App.MappingProfiles
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.CreatedByUserName,
                opt => opt.MapFrom(src => src.CreatedByUser != null ? src.CreatedByUser.FirstName : null));
-
+            CreateMap<User, UserProfileDto>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
+                
         }
     }
 }

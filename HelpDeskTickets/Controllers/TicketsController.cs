@@ -110,7 +110,33 @@ namespace HelpDeskTickets.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+        [HttpPut("{id}/assign")]
+        [Authorize(Roles = "ITManager,Admin")]
+        public async Task<IActionResult> AssignTicket(int ticketId, [FromBody] AssignmentTicketRequest request)
+        {
 
+            try
+            {
+
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                var user = await _userManager.FindByIdAsync(userId);
+
+                var result = await _ticketService.AssignTicketToTechnicianAsync(ticketId, request.TechnicianId, userId, userRole);
+                if (result == null)
+                    return NotFound();
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteTicket(int id)

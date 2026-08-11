@@ -13,6 +13,8 @@ namespace HelpDeskTickets.EF.Repositories
         public IBaseRepository<Ticket> Tickets { get; private set; }
         public IBaseRepository<Comment> Comments { get; private set; }
         public IBaseRepository<Department> Departments { get; private set; }
+        public IBaseRepository<User> Users { get; private set; }
+
         public IBaseRepository<Feedback> Feedbacks { get;  set; }
         public IBaseRepository<History> Histories { get; set; }
 

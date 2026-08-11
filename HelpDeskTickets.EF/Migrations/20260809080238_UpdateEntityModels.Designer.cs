@@ -3,6 +3,7 @@ using System;
 using HelpDeskTickets.EF.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HelpDeskTickets.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260809080238_UpdateEntityModels")]
+    partial class UpdateEntityModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,36 +108,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.ToTable("Feedback");
                 });
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("action")
-                        .HasColumnType("integer");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("History");
-                });
-
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
                 {
                     b.Property<int>("Id")
@@ -209,9 +182,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CurrentTicketsCount")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("integer");
 
@@ -226,12 +196,6 @@ namespace HelpDeskTickets.EF.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsAvailable")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -461,35 +425,11 @@ namespace HelpDeskTickets.EF.Migrations
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
                 {
                     b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany("AssignedTickets")
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HelpDeskTickets.Core.Models.Ticket", "Ticket")
-                        .WithMany("Historys")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
                         .WithMany()
                         .HasForeignKey("AssignedToUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
-                        .WithMany("UserTickets")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -575,15 +515,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Feedback");
-                });
-
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
-                {
-                    b.Navigation("AssignedTickets");
-
-                    b.Navigation("UserTickets");
-
-                    b.Navigation("Historys");
                 });
 #pragma warning restore 612, 618
         }

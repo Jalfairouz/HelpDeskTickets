@@ -14,7 +14,6 @@ namespace HelpDeskTickets.Core
         IBaseRepository<Feedback> Feedbacks { get; }
         IBaseRepository<History> Histories { get; }
 
-        
         Task<int> SaveChangesAsync();
 
     }

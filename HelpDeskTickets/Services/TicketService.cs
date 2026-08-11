@@ -5,10 +5,12 @@ using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.DTOs.Requests;
 using HelpDeskTickets.DTOs.Responses;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace HelpDeskTickets.App.Services
@@ -17,10 +19,12 @@ namespace HelpDeskTickets.App.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public TicketService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public TicketService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
         public async Task<TicketResponse> CreateTicketAsync(CreateTicketRequest request, string userId)
         {
@@ -36,7 +40,7 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.Tickets.AddAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
 
-
+            await AutoAssignTicketAsync(ticket.Id);
             return _mapper.Map<TicketResponse>(ticket);
         }
         public async Task<TicketResponse?> GetTicketByIdAsync(
@@ -141,15 +145,44 @@ namespace HelpDeskTickets.App.Services
         }
         public async Task<bool> AutoAssignTicketAsync(int ticketId)
         {
-            var technician= await _unitOfWork.Tickets.GetByIdAsync(ticketId);
+            var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
+            if (ticket == null || ticket.AssignedToUserId == null) return false;
+
+            var allTechnician = await _userManager.GetUsersInRoleAsync("Technician");
+            var AvailableTechnician = allTechnician
+                .Where(t => t.IsAvailable == true)
+                .ToList();
+            if (!AvailableTechnician.Any()) return false;
+
+            var selectedTechnician = AvailableTechnician.OrderBy(t => t.AssignedTickets.Count(tr => tr.AssignedToUserId != null)).FirstOrDefault();
+            if (selectedTechnician == null) return false;
+
+            ticket.AssignedToUserId = selectedTechnician.Id;
+            await _unitOfWork.SaveChangesAsync();
 
             return true;
         }
-       //public async Task<TicketResponse?> AssignTicketToTechnicianAsync(int ticketId, string technicianId, string ManagerId)
-       // {
+        
+        
+        public async Task<TicketResponse?> AssignTicketToTechnicianAsync( int ticketId, string technicianId, string ManagerId, string userRole)
+         {
 
-       //     return Ok();
-       // }
+            if (userRole != "ITManager")
+                throw new UnauthorizedAccessException("Only ITManager can Assign tickets");
+            var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
+            if (ticket == null) throw new Exception("Ticket not found");
+            if (ticket.AssignedToUserId != null) throw new Exception("Ticket was already assigned to a technician");
+
+            var technician = await _userManager.FindByIdAsync(technicianId);
+            if (technician == null || !await _userManager.IsInRoleAsync(technician, "Technician"))
+                throw new Exception("The specified user is not a valid technician.");
+
+            ticket.AssignedToUserId = technicianId;
+
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<TicketResponse>(ticket);
+        }
+
         private void ValidateTicketAccess(
             Ticket ticket,
             string userId,

@@ -12,10 +12,8 @@ namespace HelpDeskTickets.Core.Models
         [Range(0, 10)]
         public int Rating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         public int TicketId { get; set; }
         public Ticket Ticket { get; set; } = null!;
-
         public string CreatedByUserId { get; set; } = string.Empty;
         public User CreatedByUser { get; set; } = null!;
 

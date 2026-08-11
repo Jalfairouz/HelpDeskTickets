@@ -59,7 +59,7 @@ namespace HelpDeskTickets.Core.Models
 
         public Feedback? Feedback { get; set; }
 
-        //public ICollection<History> Historys { get; set; } = new List<History>();
+        public ICollection<History> Historys { get; set; } = new List<History>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

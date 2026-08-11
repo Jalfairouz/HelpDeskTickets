@@ -4,6 +4,7 @@ using HelpDeskTickets.Core.Interfaces;
 using HelpDeskTickets.Core.Models;
 using HelpDeskTickets.Settings;
 using Microsoft.AspNetCore.Identity;
+using System.Data;
 
 namespace HelpDeskTickets.Services
 {
@@ -64,7 +65,30 @@ namespace HelpDeskTickets.Services
                 DepartmentId = user.DepartmentId
             };
         }
+        public async Task<UserResponse> AssignRoleToUserAsync(string email, string roleName)
+        {
 
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email is required");
+            var validRoles = new[] { "Admin", "ITManager", "Technician", "User" };
+            if (!validRoles.Contains(roleName))
+                throw new ArgumentException($"Invalid role: {roleName}");
+            
+            var user = await _userManager.FindByEmailAsync(email);
+
+            await _userManager.AddToRoleAsync(user, roleName);
+
+            return new UserResponse
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = roleName,
+                DepartmentId = user.DepartmentId
+            };
+
+        }
         public async Task<AuthResponse> AuthenticateAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))

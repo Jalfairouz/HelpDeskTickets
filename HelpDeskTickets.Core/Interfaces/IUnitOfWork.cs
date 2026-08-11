@@ -12,9 +12,10 @@ namespace HelpDeskTickets.Core
         IBaseRepository<Comment> Comments { get; }
         IBaseRepository<Department> Departments { get; }
         IBaseRepository<Feedback> Feedbacks { get; }
+
+        IBaseRepository<User> Users { get; }
         IBaseRepository<History> Historys { get; }
 
-        
         Task<int> SaveChangesAsync();
 
     }

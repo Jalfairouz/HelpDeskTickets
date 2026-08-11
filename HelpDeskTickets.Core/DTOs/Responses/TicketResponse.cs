@@ -10,8 +10,10 @@ namespace HelpDeskTickets.DTOs.Responses
         public int Priority { get; set; }
         public DateTime CreatedAt { get; set; }
         public int DepartmentId { get; set; }
-        public DepartmentResponse Department { get; set; }
-        public ICollection<CommentResponse> Comments { get; set; }
-            = new List<CommentResponse>();
+        public string AssignedToUserName { get; set; }
+        public string? AssignedToUserId { get; set; }
+
+        //public ICollection<CommentResponse> Comments { get; set; }
+        //    = new List<CommentResponse>();
     }
 }

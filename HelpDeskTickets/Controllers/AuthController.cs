@@ -3,6 +3,7 @@ using HelpDeskTickets.Core.DTOs.Responses;
 using HelpDeskTickets.Core.Interfaces;
 using HelpDeskTickets.Core.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -92,6 +93,23 @@ namespace HelpDeskTickets.Controllers
             {
                 return StatusCode(500, new { error = ex.Message });
             }
+        }
+
+        [HttpPost("SetUserRole")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SetUserRole([FromBody] SetUserRoleRequest request)
+        {
+            try
+            {
+                var result = await _authService.AssignRoleToUserAsync(request.Email, request.Role);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+
         }
     }
 }

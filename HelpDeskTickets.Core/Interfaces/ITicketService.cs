@@ -17,7 +17,8 @@ namespace HelpDeskTickets.App.Services
         Task<bool> DeleteTicketAsync(int id, string userRole);
 
         Task<bool> AutoAssignTicketAsync(int ticketId);
-        Task<TicketResponse?> AssignTicketToTechnicianAsync(int ticketId, string technicianId, string ManagerId, string userRole);
+        Task<TicketResponse?> AssignTicketToTechnicianAsync(int ticketId, string technicianId, string ManagerId);
+
 
     }
 }

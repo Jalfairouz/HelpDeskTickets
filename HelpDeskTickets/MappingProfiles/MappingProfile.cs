@@ -22,7 +22,7 @@ namespace HelpDeskTickets.App.MappingProfiles
 
             CreateMap<Ticket, TicketResponse>()
     .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-    .ForMember(dest => dest.AssignedToUserName, opt => opt.MapFrom(src => src.AssignedToUser));
+    .ForMember(dest => dest.AssignedToUserName, opt => opt.MapFrom(src => src.AssignedToUser.Email));
 
             CreateMap<CreateDepartmentRequest, Department>();
             CreateMap<Department, DepartmentResponse>();

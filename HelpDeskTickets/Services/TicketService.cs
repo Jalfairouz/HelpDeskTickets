@@ -164,11 +164,10 @@ namespace HelpDeskTickets.App.Services
         }
         
         
-        public async Task<TicketResponse?> AssignTicketToTechnicianAsync( int ticketId, string technicianId, string ManagerId, string userRole)
+        public async Task<TicketResponse?> AssignTicketToTechnicianAsync( int ticketId, string technicianId, string ManagerId)
          {
 
-            if (userRole != "ITManager")
-                throw new UnauthorizedAccessException("Only ITManager can Assign tickets");
+            
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
             if (ticket == null) throw new Exception("Ticket not found");
             if (ticket.AssignedToUserId != null) throw new Exception("Ticket was already assigned to a technician");
@@ -182,6 +181,11 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<TicketResponse>(ticket);
         }
+
+
+
+
+
 
         private void ValidateTicketAccess(
             Ticket ticket,

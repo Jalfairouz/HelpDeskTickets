@@ -13,7 +13,7 @@ namespace HelpDeskTickets.Core.Models
         public Department? Department { get; set; }
         public bool IsActive { get; set; } = true;
         public bool? IsAvailable { get; set; }
-        public int CurrentTicketsCount { get; set; } = 0;
+        public int CurrentTicketsCount { get; set; }
 
 
         public ICollection<Ticket> UserTickets { get; set; } = new List<Ticket>();

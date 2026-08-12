@@ -25,7 +25,7 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ITManager")]
+        [Authorize(Roles = "Admin,ITManager")]
         public async Task<IActionResult> GetTicketHistory(int ticketId)
         {
             var currentUser = await _userManager.GetUserAsync(User);

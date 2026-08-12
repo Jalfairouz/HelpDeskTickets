@@ -14,7 +14,6 @@ namespace HelpDeskTickets.EF.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Department> Departments { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<User> Feedback { get; set; }
 
         public DbSet<History> Histories { get; set; }
@@ -36,7 +35,11 @@ namespace HelpDeskTickets.EF.Data
                     .OnDelete(DeleteBehavior.SetNull);
 
 
+                
+                
                 entity.HasIndex(e => e.Email).IsUnique();
+
+
             });
 
 
@@ -73,20 +76,22 @@ namespace HelpDeskTickets.EF.Data
                     .HasForeignKey(e => e.CreatedByUserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(e => e.AssignedToUser)
-                    .WithMany(u => u.AssignedTickets)
-                    .HasForeignKey(e => e.AssignedToUserId)
-                    .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasOne(e => e.Feedback)
                     .WithOne(f => f.Ticket)
                     .HasForeignKey<Feedback>(f => f.TicketId)
-                    .OnDelete(DeleteBehavior.Cascade);  
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(e => e.Historys)
+                    .WithOne(c => c.Ticket)
+                    .HasForeignKey(c => c.TicketId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasMany(e => e.Comments)
                     .WithOne(c => c.Ticket)
                     .HasForeignKey(c => c.TicketId)
                     .OnDelete(DeleteBehavior.Cascade);  
+
             });
 
             

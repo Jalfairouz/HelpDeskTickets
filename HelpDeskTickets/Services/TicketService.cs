@@ -109,27 +109,64 @@ namespace HelpDeskTickets.App.Services
         }
 
         public async Task<TicketResponse?> ChangeTicketStatusAsync(
-            int id,
-            string status,
-            string userId,
-            string userRole,
-            int? userDepartmentId)
+              int id,
+              string status,
+              string userId,
+              string userRole,
+              int? userDepartmentId)
         {
             if (!Enum.TryParse<TicketStatus>(status, true, out var ticketStatus))
-                throw new ArgumentException($"Invalid status: {status}. Valid values are: Open, InProgress, Closed");
+                throw new ArgumentException($"Invalid status: {status}");
 
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
+
             if (ticket == null)
                 return null;
 
-            ValidateTicketAccess(ticket, userId, userRole, userDepartmentId, "update");
+            if (userRole == "Technician" && ticket.AssignedToUserId != userId)
+            {
+                throw new UnauthorizedAccessException(
+                    "You can only change the status of tickets assigned to you.");
+            }
 
             ticket.Status = ticketStatus;
+            ticket.UpdateAt = DateTime.UtcNow;
+
+            if (userRole == "Technician" &&
+                ticketStatus == TicketStatus.Closed)
+            {
+                ticket.Historys.Add(new History
+                {
+                    TicketId = ticket.Id,
+                    CreatedByUserId = userId,
+                    CreatedAt = DateTime.UtcNow,
+                    action = HelpDeskTickets.Core.Models.Action.Closed
+                });
+            }
+
+            else if (userRole == "Technician" &&
+                     ticketStatus == TicketStatus.Reject)
+            {
+                ticket.Historys.Add(new History
+                {
+                    TicketId = ticket.Id,
+                    CreatedByUserId = userId,
+                    CreatedAt = DateTime.UtcNow,
+                    action = HelpDeskTickets.Core.Models.Action.rejected
+                });
+            }
+
             _unitOfWork.Tickets.Update(ticket);
+
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<TicketResponse>(ticket);
         }
+
+        //ValidateTicketAccess(ticket, userId, userRole, userDepartmentId, "update");
+
+       
+        
         public async Task<bool> DeleteTicketAsync(int id, string userRole)
         {
             if (userRole != "Admin")

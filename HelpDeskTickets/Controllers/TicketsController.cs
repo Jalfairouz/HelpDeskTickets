@@ -159,7 +159,7 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpPatch("{id}/status")]
-        [Authorize(Roles = "ITManager,Admin")]
+        [Authorize(Roles = "Technician,Admin")]
         public async Task<IActionResult> ChangeStatus(int id, [FromBody] ChangeStatusRequest request)
         {
             try

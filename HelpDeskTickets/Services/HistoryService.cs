@@ -2,6 +2,8 @@
 using HelpDeskTickets.App.Services;
 using HelpDeskTickets.Core;
 using HelpDeskTickets.Core.DTOs.Responses;
+using HelpDeskTickets.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 public class HistoryService : IHistoryService
 {
@@ -17,10 +19,8 @@ public class HistoryService : IHistoryService
     public async Task<IEnumerable<HistoryResponse>> GetHistoryByTicketAsync(int ticketId)
     {
         var histories = await _unitOfWork.Histories.FindAsync(h => h.TicketId == ticketId);
-
-        var orderedHistories = histories
-            .OrderByDescending(h => h.CreatedAt);
-
-        return _mapper.Map<IEnumerable<HistoryResponse>>(orderedHistories);
+        IQueryable<History> query = _unitOfWork.Histories.GetQueryable().Where(t=> t.TicketId == ticketId);
+        var ticketHistory = query.ToList();
+        return _mapper.Map<List<HistoryResponse>>(ticketHistory);
     }
 }

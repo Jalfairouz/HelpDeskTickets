@@ -11,12 +11,11 @@ namespace HelpDeskTickets.Core.DTOs.Responses
         public int Id { get; set; }
 
         public int TicketId { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public Action action { get; set; }
+        public string action { get; set; }
 
-        public string CreatedByUserId { get; set; }
+        public string PerformedByUserId { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime LoggedAt { get; set; }
 
 
     }

@@ -39,7 +39,9 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.SaveChangesAsync();
 
             await AutoAssignTicketAsync(ticket.Id);
-            return _mapper.Map<TicketResponse>(ticket);
+            var updatedTicket = await _unitOfWork.Tickets.GetByIdAsync(ticket.Id);
+
+            return _mapper.Map<TicketResponse>(updatedTicket);
         }
         public async Task<TicketResponse?> GetTicketByIdAsync(
            int id,
@@ -140,6 +142,7 @@ namespace HelpDeskTickets.App.Services
                     CreatedAt = DateTime.UtcNow,
                     action = HelpDeskTickets.Core.Models.Action.Closed
                 });
+                
             }
 
             else if (userRole == "Technician" &&
@@ -151,7 +154,9 @@ namespace HelpDeskTickets.App.Services
                     CreatedByUserId = userId,
                     CreatedAt = DateTime.UtcNow,
                     action = HelpDeskTickets.Core.Models.Action.rejected
+
                 });
+                ticket.AssignedToUser = null;
             }
 
             _unitOfWork.Tickets.Update(ticket);
@@ -178,32 +183,45 @@ namespace HelpDeskTickets.App.Services
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> AutoAssignTicketAsync(int ticketId)
+        public async Task AutoAssignTicketAsync(int ticketId)
         {
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
-            if (ticket == null || ticket.AssignedToUserId != null) return false;
+            if (ticket == null)
+            {
+                throw new KeyNotFoundException("Ticket not found.");
+            }
 
-            var allTechnician = await _userManager.GetUsersInRoleAsync("Technician");
-            var AvailableTechnician = allTechnician
-                .Where(t => t.IsAvailable == true)
-                .ToList();
-            if (!AvailableTechnician.Any()) return false;
+            if (ticket.AssignedToUserId != null)
+            {
+                throw new InvalidOperationException("This ticket is already assigned to another technician.");
+            }
 
-            var selectedTechnician = AvailableTechnician.OrderBy(t => t.AssignedTickets.Count(tr => tr.AssignedToUserId != null)).FirstOrDefault();
-            if (selectedTechnician == null) return false;
+            var allTechnicians = await _userManager.GetUsersInRoleAsync("Technician");
+
+
+            var selectedTechnician = allTechnicians
+                .Where(t => t.IsAvailable ==null)
+                .OrderBy(t => t.AssignedTickets?.Count ?? 0)
+                .FirstOrDefault();
+
+            if (selectedTechnician == null)
+            {
+                throw new InvalidOperationException("No available technicians found in the system right now.");
+            }
 
             ticket.AssignedToUserId = selectedTechnician.Id;
             ticket.UpdateAt = DateTime.UtcNow;
             ticket.Historys.Add(new History
             {
                 TicketId = ticket.Id,
-                CreatedByUserId = "System",
+                CreatedByUserId = ticket.CreatedByUserId,
                 CreatedAt = DateTime.UtcNow,
                 action = HelpDeskTickets.Core.Models.Action.AssigntBySystem,
             });
+            _unitOfWork.Tickets.Update(ticket);
             await _unitOfWork.SaveChangesAsync();
 
-            return true;
+
         }
         
         

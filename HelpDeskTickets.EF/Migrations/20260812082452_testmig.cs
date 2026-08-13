@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HelpDeskTickets.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class historytable : Migration
+    public partial class testmig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,6 +68,9 @@ namespace HelpDeskTickets.EF.Migrations
                     FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     DepartmentId = table.Column<int>(type: "integer", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "boolean", nullable: true),
+                    CurrentTicketsCount = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -206,8 +209,7 @@ namespace HelpDeskTickets.EF.Migrations
                         name: "FK_Tickets_AspNetUsers_AssignedToUserId",
                         column: x => x.AssignedToUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tickets_AspNetUsers_CreatedByUserId",
                         column: x => x.CreatedByUserId,
@@ -278,31 +280,37 @@ namespace HelpDeskTickets.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "History",
+                name: "Histories",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedByUserId = table.Column<string>(type: "text", nullable: false),
                     TicketId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    action = table.Column<int>(type: "integer", nullable: false)
+                    action = table.Column<int>(type: "integer", nullable: false),
+                    TicketId1 = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_History", x => x.id);
+                    table.PrimaryKey("PK_Histories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_History_AspNetUsers_CreatedByUserId",
+                        name: "FK_Histories_AspNetUsers_CreatedByUserId",
                         column: x => x.CreatedByUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_History_Tickets_TicketId",
+                        name: "FK_Histories_Tickets_TicketId",
                         column: x => x.TicketId,
                         principalTable: "Tickets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Histories_Tickets_TicketId1",
+                        column: x => x.TicketId1,
+                        principalTable: "Tickets",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -381,14 +389,19 @@ namespace HelpDeskTickets.EF.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_History_CreatedByUserId",
-                table: "History",
+                name: "IX_Histories_CreatedByUserId",
+                table: "Histories",
                 column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_History_TicketId",
-                table: "History",
+                name: "IX_Histories_TicketId",
+                table: "Histories",
                 column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Histories_TicketId1",
+                table: "Histories",
+                column: "TicketId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_AssignedToUserId",
@@ -431,7 +444,7 @@ namespace HelpDeskTickets.EF.Migrations
                 name: "Feedback");
 
             migrationBuilder.DropTable(
-                name: "History");
+                name: "Histories");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

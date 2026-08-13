@@ -107,11 +107,11 @@ namespace HelpDeskTickets.EF.Migrations
 
             modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -123,16 +123,21 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Property<int>("TicketId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("TicketId1")
+                        .HasColumnType("integer");
+
                     b.Property<int>("action")
                         .HasColumnType("integer");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("History");
+                    b.HasIndex("TicketId1");
+
+                    b.ToTable("Histories");
                 });
 
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
@@ -458,23 +463,23 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Navigation("Ticket");
                 });
 
-            modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
-                {
-                    b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany("AssignedTickets")
             modelBuilder.Entity("HelpDeskTickets.Core.Models.History", b =>
                 {
                     b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HelpDeskTickets.Core.Models.Ticket", "Ticket")
-                        .WithMany("Historys")
+                        .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("HelpDeskTickets.Core.Models.Ticket", null)
+                        .WithMany("Historys")
+                        .HasForeignKey("TicketId1");
 
                     b.Navigation("CreatedByUser");
 
@@ -484,13 +489,11 @@ namespace HelpDeskTickets.EF.Migrations
             modelBuilder.Entity("HelpDeskTickets.Core.Models.Ticket", b =>
                 {
                     b.HasOne("HelpDeskTickets.Core.Models.User", "AssignedToUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedToUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany("AssignedTickets")
+                        .HasForeignKey("AssignedToUserId");
 
                     b.HasOne("HelpDeskTickets.Core.Models.User", "CreatedByUser")
                         .WithMany("UserTickets")
-                        .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -575,6 +578,8 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Feedback");
+
+                    b.Navigation("Historys");
                 });
 
             modelBuilder.Entity("HelpDeskTickets.Core.Models.User", b =>
@@ -582,8 +587,6 @@ namespace HelpDeskTickets.EF.Migrations
                     b.Navigation("AssignedTickets");
 
                     b.Navigation("UserTickets");
-
-                    b.Navigation("Historys");
                 });
 #pragma warning restore 612, 618
         }

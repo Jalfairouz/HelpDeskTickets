@@ -28,14 +28,12 @@ namespace HelpDeskTickets.App.Services
         }
         public async Task<TicketResponse> CreateTicketAsync(CreateTicketRequest request, string userId)
         {
-            var departmentCheck = await _unitOfWork.Departments.GetByIdAsync(request.DepartmentId);
-            if (departmentCheck == null)
-                throw new Exception("Department not found");
 
             var ticket = _mapper.Map<Ticket>(request);
             ticket.CreatedAt = DateTime.UtcNow;
             ticket.Status = TicketStatus.Open;
             ticket.CreatedByUserId = userId;
+           
 
             await _unitOfWork.Tickets.AddAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
@@ -58,7 +56,7 @@ namespace HelpDeskTickets.App.Services
             if (ticket == null)
                 return null;
 
-            ValidateTicketAccess(ticket, userId, userRole, userDepartmentId, "view");
+            //ValidateTicketAccess(ticket, userId, userRole, userDepartmentId, "view");
 
             return _mapper.Map<TicketResponse>(ticket);
         }
@@ -99,7 +97,7 @@ namespace HelpDeskTickets.App.Services
             if (ticket == null)
                 return null;
 
-            ValidateTicketAccess(ticket, userId, userRole, userDepartmentId, "update");
+            //ValidateTicketAccess(ticket, userId, userRole, userDepartmentId, "update");
 
             _mapper.Map(request, ticket);
             _unitOfWork.Tickets.Update(ticket);
@@ -183,7 +181,7 @@ namespace HelpDeskTickets.App.Services
         public async Task<bool> AutoAssignTicketAsync(int ticketId)
         {
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
-            if (ticket == null || ticket.AssignedToUserId == null) return false;
+            if (ticket == null || ticket.AssignedToUserId != null) return false;
 
             var allTechnician = await _userManager.GetUsersInRoleAsync("Technician");
             var AvailableTechnician = allTechnician
@@ -195,17 +193,24 @@ namespace HelpDeskTickets.App.Services
             if (selectedTechnician == null) return false;
 
             ticket.AssignedToUserId = selectedTechnician.Id;
+            ticket.UpdateAt = DateTime.UtcNow;
+            ticket.Historys.Add(new History
+            {
+                TicketId = ticket.Id,
+                CreatedByUserId = "System",
+                CreatedAt = DateTime.UtcNow,
+                action = HelpDeskTickets.Core.Models.Action.AssigntBySystem,
+            });
             await _unitOfWork.SaveChangesAsync();
 
             return true;
         }
         
         
-        public async Task<TicketResponse?> AssignTicketToTechnicianAsync( int ticketId, string technicianId, string ManagerId, string userRole)
+        public async Task<TicketResponse?> AssignTicketToTechnicianAsync( int ticketId, string technicianId, string ManagerId)
          {
 
-            if (userRole != "ITManager")
-                throw new UnauthorizedAccessException("Only ITManager can Assign tickets");
+            
             var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId);
             if (ticket == null) throw new Exception("Ticket not found");
             if (ticket.AssignedToUserId != null) throw new Exception("Ticket was already assigned to a technician");
@@ -215,42 +220,54 @@ namespace HelpDeskTickets.App.Services
                 throw new Exception("The specified user is not a valid technician.");
 
             ticket.AssignedToUserId = technicianId;
-
+            ticket.UpdateAt= DateTime.UtcNow;
+            ticket.Historys.Add(new History
+            {
+                TicketId = ticket.Id,
+                CreatedByUserId = ManagerId,
+                CreatedAt = DateTime.UtcNow,
+                action = HelpDeskTickets.Core.Models.Action.AssigntByItManager,
+            });
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<TicketResponse>(ticket);
         }
 
-        private void ValidateTicketAccess(
-            Ticket ticket,
-            string userId,
-            string userRole,
-            int? userDepartmentId,
-            string action)
-        {
-            if (userRole == "Admin")
-                return;
 
-            if (userRole == "Manager")
-            {
-                if (ticket.CreatedByUser.DepartmentId != userDepartmentId)
-                    throw new UnauthorizedAccessException(
-                        $"You can only {action} tickets from your department");
-                return;
-            }
 
-            if (action == "view")
-            {
-                if (ticket.CreatedByUserId != userId)
-                    throw new UnauthorizedAccessException(
-                        "You can only view your own tickets");
-            }
-            else if (action == "update")
-            {
-                throw new UnauthorizedAccessException(
-                    "Users cannot modify tickets");
-            }
 
-        }
+
+
+        //private void ValidateTicketAccess(
+        //    Ticket ticket,
+        //    string userId,
+        //    string userRole,
+        //    int? userDepartmentId,
+        //    string action)
+        //{
+        //    if (userRole == "Admin")
+        //        return;
+
+        //    if (userRole == "Manager")
+        //    {
+        //        if (ticket.CreatedByUser.DepartmentId != userDepartmentId)
+        //            throw new UnauthorizedAccessException(
+        //                $"You can only {action} tickets from your department");
+        //        return;
+        //    }
+
+        //    if (action == "view")
+        //    {
+        //        if (ticket.CreatedByUserId != userId)
+        //            throw new UnauthorizedAccessException(
+        //                "You can only view your own tickets");
+        //    }
+        //    else if (action == "update")
+        //    {
+        //        throw new UnauthorizedAccessException(
+        //            "Users cannot modify tickets");
+        //    }
+
+        //}
         
     }
 }

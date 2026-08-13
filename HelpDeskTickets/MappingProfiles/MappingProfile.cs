@@ -22,7 +22,7 @@ namespace HelpDeskTickets.App.MappingProfiles
 
             CreateMap<Ticket, TicketResponse>()
     .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-    .ForMember(dest => dest.AssignedToUserName, opt => opt.MapFrom(src => src.AssignedToUser));
+    .ForMember(dest => dest.AssignedToUserName, opt => opt.MapFrom(src => src.AssignedToUser.Email));
 
             CreateMap<CreateDepartmentRequest, Department>();
             CreateMap<Department, DepartmentResponse>();
@@ -33,7 +33,8 @@ namespace HelpDeskTickets.App.MappingProfiles
                opt => opt.MapFrom(src => src.CreatedByUser != null ? src.CreatedByUser.FirstName : null));
             CreateMap<User, UserProfileDto>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
-                
+            CreateMap<History, HistoryResponse>()
+                  .ForMember(dest => dest.action, opt => opt.MapFrom(src => src.action.ToString()));
         }
     }
 }

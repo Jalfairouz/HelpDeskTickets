@@ -20,7 +20,7 @@ namespace HelpDeskTickets.Controllers
 
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User,Admin")]
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetAllUsers()

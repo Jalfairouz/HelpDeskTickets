@@ -16,8 +16,7 @@ public class HistoryService : IHistoryService
 
     public async Task<IEnumerable<HistoryResponse>> GetHistoryByTicketAsync(int ticketId)
     {
-        var histories = await _unitOfWork.Histories
-            .FindAsync(h => h.TicketId == ticketId);
+        var histories = await _unitOfWork.Histories.FindAsync(h => h.TicketId == ticketId);
 
         var orderedHistories = histories
             .OrderByDescending(h => h.CreatedAt);

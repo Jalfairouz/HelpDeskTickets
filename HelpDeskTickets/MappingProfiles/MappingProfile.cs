@@ -33,8 +33,7 @@ namespace HelpDeskTickets.App.MappingProfiles
                opt => opt.MapFrom(src => src.CreatedByUser != null ? src.CreatedByUser.FirstName : null));
             CreateMap<User, UserProfileDto>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
-            CreateMap<History, HistoryResponse>()
-                  .ForMember(dest => dest.action, opt => opt.MapFrom(src => src.action.ToString()));
+            CreateMap<History, HistoryResponse>();
         }
     }
 }

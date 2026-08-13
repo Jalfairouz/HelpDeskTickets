@@ -26,6 +26,8 @@ namespace HelpDeskTickets.EF.Repositories
             Tickets = new BaseRepository<Ticket>(_context);
             Comments = new BaseRepository<Comment>(_context);
             Departments = new BaseRepository<Department>(_context);
+            Users = new BaseRepository<User>(_context);
+
             Feedbacks = new BaseRepository<Feedback>(_context);
             Histories = new BaseRepository<History>(_context);
         }

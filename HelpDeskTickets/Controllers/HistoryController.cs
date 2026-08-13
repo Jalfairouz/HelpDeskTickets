@@ -29,13 +29,7 @@ namespace HelpDeskTickets.Controllers
         public async Task<IActionResult> GetTicketHistory(int ticketId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var roles = await _userManager.GetRolesAsync(currentUser);
-            var userRole = roles.FirstOrDefault() ?? string.Empty;
-            int? departmentId = currentUser.DepartmentId; 
-            var History = await _HistoryService.GetHistoryByTicketAsync(
-                ticketId
-               
-            );
+            var History = await _HistoryService.GetHistoryByTicketAsync( ticketId);
 
             return Ok(History);
 

@@ -14,8 +14,8 @@ namespace HelpDeskTickets.EF.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Department> Departments { get; set; }
-        public DbSet<User> Feedback { get; set; }
-
+        public DbSet<User> Users { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<History> Histories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

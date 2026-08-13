@@ -96,7 +96,7 @@ namespace HelpDeskTickets.Controllers
         }
 
         [HttpPost("SetUserRole")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> SetUserRole([FromBody] SetUserRoleRequest request)
         {
             try

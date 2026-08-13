@@ -47,7 +47,7 @@ builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IDepartmentSrevice, DepartmentSrevice>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddScoped<IHistoryService, HistoryService>();
 
 builder.Services.AddSingleton(jwtSettings);
 
